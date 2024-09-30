@@ -51,6 +51,7 @@ class LinkedList:
         Constructs all the necessary attributes for the LinkedList object.
         """
         self.head: Optional[Node] = None
+        self.curr: Optional[Node] = None
 
     def __str__(self) -> str:
         """
@@ -67,6 +68,9 @@ class LinkedList:
             out_string += str(cur_head.value) + " -> "
             cur_head = cur_head.next
         return out_string
+    
+    def __repr__(self) -> str:
+        return str(self)
 
     def append(self, value: int) -> None:
         """
@@ -76,6 +80,12 @@ class LinkedList:
         -----------
         value : int
             The value to be stored in the new node.
+
+        >>> example = LinkedList()
+        >>> for x in range(1,4):
+        ...     example.append(x)
+        >>> example
+        1 -> 2 -> 3 -> 
         """
         if self.head is None:
             self.head = Node(value)
@@ -87,6 +97,91 @@ class LinkedList:
 
         node.next = Node(value)
 
+    def prepend(self, value: int) -> Node:
+        """
+        Prepend a new node with a given value to the begining of the list.
+
+        Parameters:
+        -----------
+        value : int
+            The value to be stored in the new node.
+
+        >>> test = LinkedList()
+        >>> test.prepend(1)
+        1
+        >>> test
+        1 -> 
+        >>> test.prepend(2)
+        2
+        >>> test
+        2 -> 1 -> 
+        """
+        if self.head is None:
+            self.head = Node(value)
+            return self.head
+        
+        newHead = Node(value)
+        newHead.next = self.head
+        self.head = newHead
+        return self.head
+
+    def remove(self, node: Node) -> Optional[Node]:
+        """
+        Remove a given node from a linked list or return nothing
+
+        >>> example = LinkedList()
+        >>> example.remove(None) is None
+        True
+        >>> for x in range(1,4):
+        ...     example.append(x)
+        >>> next = example.head.next
+        >>> example.remove(next)
+        2
+        >>> example
+        1 -> 3 -> 
+        >>> example.remove(example.head)
+        1
+        >>> example
+        3 -> 
+        """
+        if node is None:
+            return
+        curr = self.head
+        if curr == node and self.head is not None:
+            self.head = self.head.next
+            return curr
+
+        while curr is not None and curr.next != node:
+            curr = curr.next
+
+        if curr is None:
+            return
+        else:
+            curr.next = node.next
+            return node
+        
+    def index(self, n: int) -> Optional[Node]:
+        """
+        Returns a node equivalent to list index in LinkedList or None
+
+        >>> example = LinkedList()
+        >>> for x in range(1,4):
+        ...     example.append(x)
+        >>> example.index(0)
+        1
+        >>> example.index(2)
+        3
+        >>> example.index(10) is None
+        True
+        """
+        i = 0
+        curr = self.head
+        while curr is not None and i != n:
+            curr = curr.next
+            i = i + 1
+        return curr
+
+
     def size(self) -> int:
         """
         Calculate the size (number of nodes) of the linked list.
@@ -95,6 +190,14 @@ class LinkedList:
         --------
         int
             The number of nodes in the linked list.
+
+        >>> example = LinkedList()
+        >>> example.size()
+        0
+        >>> for x in range(1,4):
+        ...     example.append(x)
+        >>> example.size()
+        3
         """
         size: int = 0
         node: Optional[Node] = self.head
@@ -103,6 +206,33 @@ class LinkedList:
             node = node.next
 
         return size
+    
+    def tail(self) -> Optional[Node]:
+        """
+        Return the final item in the linked list
+        >>> example = LinkedList()
+        >>> example.tail() is None
+        True
+        >>> for x in range(1,4):
+        ...     example.append(x)
+        >>> example.tail()
+        3
+        """
+        curr = self.head
+        while curr is not None and curr.next is not None:
+            curr = curr.next
+        return curr
+
+    def __iter__(self):
+        self.curr = self.head
+        return self
+
+    def __next__(self):
+        if self.curr is None:
+            raise StopIteration
+        result = self.curr.value 
+        self.curr = self.curr.next
+        return result
 
 
 def union(llist_1: LinkedList, llist_2: LinkedList) -> LinkedList:
@@ -122,10 +252,15 @@ def union(llist_1: LinkedList, llist_2: LinkedList) -> LinkedList:
         A new linked list containing all unique elements from both input linked lists.
     """
     # Use a set to store all unique elements
-    pass
-
+    left = set(llist_1)
+    right = set(llist_2)
+    list_union = left.union(right)
     # Create a new linked list to store the union
-    pass
+    result = LinkedList()
+    for elem in list_union:
+        result.prepend(elem)
+    return result
+    
 
 def intersection(llist_1: LinkedList, llist_2: LinkedList) -> LinkedList:
     """
@@ -144,15 +279,18 @@ def intersection(llist_1: LinkedList, llist_2: LinkedList) -> LinkedList:
         A new linked list containing all elements that are present in both input linked lists.
     """
     # Use sets to find the intersection
-    pass
-
     # Find the intersection of both sets
-    pass
-
     # Create a new linked list to store the intersection
-    pass
+    left = set(llist_1)
+    right = set(llist_2)
+    list_intersection = left.intersection(right)
+    # Create a new linked list to store the union
+    result = LinkedList()
+    for elem in list_intersection:
+        result.prepend(elem)
+    return result
 
-if __name__ == "__main__":
+def tests():
     ## Test case 1
     linked_list_1 = LinkedList()
     linked_list_2 = LinkedList()
@@ -169,6 +307,8 @@ if __name__ == "__main__":
     print("Test Case 1:")
     print("Union:", union(linked_list_1, linked_list_2)) # Expected: 1, 2, 3, 4, 6, 9, 11, 21, 32, 35, 65
     print("Intersection:", intersection(linked_list_1, linked_list_2)) # Expected: 4, 6, 21
+    assert set(union(linked_list_1, linked_list_2)) == { 1, 2, 3, 4, 6, 9, 11, 21, 32, 35, 65 }
+    assert set(intersection(linked_list_1, linked_list_2))  == { 4, 6, 21 }
 
     ## Test case 2
     linked_list_3 = LinkedList()
@@ -186,9 +326,26 @@ if __name__ == "__main__":
     print("\nTest Case 2:")
     print("Union:", union(linked_list_3, linked_list_4)) # Expected: 1, 2, 3, 4, 6, 7, 8, 9, 11, 21, 23, 35, 65
     print("Intersection:", intersection(linked_list_3, linked_list_4)) # Expected: empty
+    assert set(union(linked_list_3, linked_list_4)) == { 1, 2, 3, 4, 6, 7, 8, 9, 11, 21, 23, 35, 65 }
+    assert set(intersection(linked_list_3, linked_list_4)) == set([])
 
     ## Test case 3
-    pass
+    ll_5 = LinkedList()
+    ll_6 = LinkedList()
+    
+    for i in element_1:
+        ll_6.append(i)
+    assert set(union(ll_5, ll_6)) == set(element_1)
+    assert set(intersection(ll_5, ll_6)) == set([])
 
     ## Test case 4
-    pass
+    assert set(union(ll_6, ll_6)) == set(element_1)
+    assert set(intersection(ll_6, ll_6)) == set(element_1)
+    
+
+
+
+if __name__ == "__main__":
+    import doctest
+    doctest.testmod(verbose=False)
+    tests()
