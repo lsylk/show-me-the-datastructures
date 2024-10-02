@@ -1,6 +1,8 @@
 import heapq
 from collections import defaultdict
 from typing import Optional
+import random
+import string
 
 # Huffman Tree Node
 class HuffmanNode:
@@ -217,6 +219,10 @@ def huffman_decoding(encoded_data: str, tree: Optional[HuffmanNode]) -> str:
                 curr = tree
     return result
 
+def randomString(n: int) -> str:
+    # https://stackoverflow.com/questions/2257441/random-string-generation-with-upper-case-letters-and-digits
+    return ''.join(random.choices(string.ascii_uppercase, k=n))
+
 def test():
     # Test Case 1: Standard test case
     print("\nTest Case 1: Standard sentence")
@@ -238,6 +244,19 @@ def test():
     nd, ntree = huffman_encoding(nothing)
     assert nd == ""
     assert huffman_decoding(nd, ntree) == ""
+
+    AS = "AAAAAAA"
+    ad, atree = huffman_encoding(AS)
+    assert ad == "0000000"
+    assert huffman_decoding(ad, atree) == AS
+
+    random20 = randomString(20)
+    re, rtree = huffman_encoding(random20)
+    assert huffman_decoding(re, rtree) == random20
+
+    randMillion = randomString(1_000_000)
+    rm, rmtree = huffman_encoding(randMillion)
+    assert huffman_decoding(rm, rmtree) == randMillion
 
 
 # Main Function

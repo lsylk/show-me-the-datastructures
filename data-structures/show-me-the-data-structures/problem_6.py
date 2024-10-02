@@ -258,7 +258,8 @@ def union(llist_1: LinkedList, llist_2: LinkedList) -> LinkedList:
     # Create a new linked list to store the union
     result = LinkedList()
     for elem in list_union:
-        result.prepend(elem)
+        #it is more efficient to prepend but for the sake of preserving order, append
+        result.append(elem)
     return result
     
 
@@ -287,7 +288,7 @@ def intersection(llist_1: LinkedList, llist_2: LinkedList) -> LinkedList:
     # Create a new linked list to store the union
     result = LinkedList()
     for elem in list_intersection:
-        result.prepend(elem)
+        result.append(elem)
     return result
 
 def tests():

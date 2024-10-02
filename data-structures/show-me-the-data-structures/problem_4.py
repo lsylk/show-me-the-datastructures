@@ -100,6 +100,9 @@ def is_user_in_group(user: str, group: Group) -> bool:
     if user is None:
         return False
 
+    if group is None:
+        return False
+
     # Use a stack to implement an iterative depth-first search
     stack = [group]
 
@@ -133,7 +136,8 @@ if __name__ == "__main__":
     print(is_user_in_group("sub_child_user", parent))  # Expected output: True
 
     # Test Case 2
-    pass
+    assert is_user_in_group(None, parent) == False
+    assert is_user_in_group("child", None) == False
 
     # Test Case 3
-    pass
+    assert is_user_in_group("nope", parent) == False

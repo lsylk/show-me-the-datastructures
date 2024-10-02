@@ -66,3 +66,9 @@ if __name__ == "__main__":
     # test case 5
     result = find_files(".c", "./testdir/subdir1/a.h")
     assert result == []
+
+    result = find_files(".c", "./bogusdir")
+    assert result == []
+
+    result = find_files(".pdf", "./testdir")
+    assert set(result) == set([])
