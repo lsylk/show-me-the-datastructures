@@ -14,6 +14,34 @@ algorithm is correct. If necessary, add additional test cases to verify that
 your algorithm works correctly.
 """
 
+def findMinIndex(input_list: list[int]) -> int:
+    """
+    >>> findMinIndex([6,7,8,1,2,3,4,5])
+    3
+    """
+    low, high = 0, len(input_list) - 1
+    while low < high:
+        if input_list[low] <= input_list[high]:
+            return low
+        mid = (low + high) // 2
+        if input_list[mid] > input_list[high]:
+            low = mid + 1
+        else:
+            high = mid
+    return low
+
+def binarySearch(input_list: list[int], number) -> int:
+    low, high = 0, len(input_list) - 1
+    while low <= high:
+        mid = (low + high) // 2
+        if input_list[mid] == number:
+            return mid
+        if input_list[mid] < number:
+            low = mid + 1
+        else:
+            high = mid - 1
+    return -1
+
 def rotated_array_search(input_list: list[int], number: int) -> int:
     """
     Find the index by searching in a rotated sorted array
@@ -25,7 +53,15 @@ def rotated_array_search(input_list: list[int], number: int) -> int:
     Returns:
     int: Index of the target number or -1 if not found
     """
-    pass
+    if len(input_list) == 0:
+        return -1
+    minIndex = findMinIndex(input_list)
+    begin, rest = input_list[minIndex:], input_list[0: minIndex]
+    # print(begin, rest)
+    if number <= begin[-1]:
+        return binarySearch(begin, number)+minIndex
+    else:
+        return binarySearch(rest, number)
 
 # Test function using provided test cases
 def test_function(test_case: list[list[int], int]) -> None:
@@ -46,6 +82,7 @@ def test_function(test_case: list[list[int], int]) -> None:
     if linear_search(input_list, number) == rotated_array_search(input_list, number):
         print("Pass")
     else:
+        print(rotated_array_search(input_list, number))
         print("Fail")
 
 def linear_search(input_list: list[int], number: int) -> int:
@@ -65,6 +102,8 @@ def linear_search(input_list: list[int], number: int) -> int:
     return -1
 
 if __name__ == '__main__':
+    import doctest
+    doctest.testmod(verbose=True)
     # Edge case: Empty input list
     test_function([[], 5])
     # Expected output: Pass

@@ -32,7 +32,8 @@ class RouteTrieNode:
         """
         Initialize a RouteTrieNode with an empty dictionary for children and no handler.
         """
-        pass
+        self.children: dict[str, RouteTrieNode] = {}
+        self.handler: Optional[str] = None
 
 class RouteTrie:
     """
@@ -48,7 +49,9 @@ class RouteTrie:
         Args:
         root_handler (str): The handler for the root node.
         """
-        pass
+        assert isinstance(root_handler, str), "Handler "
+        self.root: RouteTrieNode = RouteTrieNode()
+        self.root.handler = root_handler
 
     def insert(self, path_parts: list[str], handler: str) -> None:
         """
@@ -58,7 +61,15 @@ class RouteTrie:
         path_parts (list[str]): A list of parts of the route.
         handler (str): The handler for the route.
         """
-        pass
+        assert isinstance(handler, str)
+        curr = self.root
+        for part in path_parts:
+            assert isinstance(part, str), "Path parts should be strings"
+            if part not in curr.children:
+                curr.children[part] = RouteTrieNode()
+            curr = curr.children[part]
+        curr.handler = handler
+
 
     def find(self, path_parts: list[str]) ->  Optional[str]:
         """
@@ -70,7 +81,13 @@ class RouteTrie:
         Returns:
         str or None: The handler for the route if found, otherwise None.
         """
-        pass
+        curr = self.root
+        for part in path_parts:
+            assert isinstance(part, str), "Path parts should be strings"
+            if part not in curr.children:
+                return None
+            curr = curr.children[part]
+        return curr.handler
 
 class Router:
     """
@@ -88,7 +105,10 @@ class Router:
         root_handler (str): The handler for the root route.
         not_found_handler (str): The handler for routes that are not found.
         """
-        pass
+        assert isinstance(root_handler, str)
+        assert isinstance(not_found_handler, str)
+        self.route_trie: RouteTrie = RouteTrie(root_handler)
+        self.not_found_handler: str = not_found_handler
 
     def add_handler(self, path: str, handler: str) -> None:
         """
@@ -98,7 +118,9 @@ class Router:
         path (str): The route path.
         handler (str): The handler for the route.
         """
-        pass
+        assert isinstance(handler, str)
+        if path.startswith("/"):
+            self.route_trie.insert(self.split_path(path), handler)
 
     def lookup(self, path: str) -> str:
         """
@@ -110,7 +132,12 @@ class Router:
         Returns:
         str: The handler for the route if found, otherwise the not-found handler.
         """
-        pass
+        assert isinstance(path, str)
+        if path.startswith("/"):
+            handler = self.route_trie.find(self.split_path(path))
+            return handler if handler is not None else self.not_found_handler
+        else:
+            return self.not_found_handler
 
     def split_path(self, path: str) -> list[str]:
         """
@@ -122,7 +149,7 @@ class Router:
         Returns:
             List[str]: A list of parts of the path.
         """
-        pass
+        return [part for part in path.strip().split("/") if part != ""]
 
 if __name__ == '__main__':
     # create the router and add a route
@@ -131,16 +158,36 @@ if __name__ == '__main__':
 
     # Edge case: Empty path
     print(router.lookup(""))
+    assert router.lookup("") == 'not found handler'
     # Expected output: 'not found handler'
+
+    # Edge case: Root path
+    print(router.lookup("/"))
+    assert router.lookup("/") == 'root handler'
 
     # Normal case: Path not found
     print(router.lookup("/home/contact"))
+    assert router.lookup("/home/contact") == 'not found handler'
     # Expected output: 'not found handler'
 
     # Normal case: Path with multiple segments
     print(router.lookup("/home/about/me"))
+    assert router.lookup("/home/about/me") == 'not found handler'
     # Expected output: 'not found handler'
 
     # Normal case: Path with exact match
     print(router.lookup("/home/about"))
+    assert router.lookup("/home/about")
     # Expected output: 'about handler'
+
+    try:
+        router.route_trie.find([1,2])
+    except AssertionError as err:
+        assert repr(err) == "AssertionError('Path parts should be strings')"
+        print("Pass find parts assertion")
+
+    try:
+        router.route_trie.insert(["about", None], "Should not insert")
+    except AssertionError as err:
+        assert repr(err) == "AssertionError('Path parts should be strings')"
+        print("Pass insert parts assertion")

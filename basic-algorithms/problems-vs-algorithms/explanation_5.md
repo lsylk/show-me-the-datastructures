@@ -11,3 +11,9 @@ of time and space complexity. If necessary, you can support your explanation
 with code snippets or mathematical formulas. For guidance on how to write 
 formulas in markdown, refer to https://docs.github.com/en/get-started/writing-on-github/working-with-advanced-formatting/writing-mathematical-expressions.
 -->
+
+Folowed the examples from the course and filled in the methods according to the descriptions. 
+
+Runtime 
+insertion O(n)
+find O(n)

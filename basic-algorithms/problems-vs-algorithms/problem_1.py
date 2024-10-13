@@ -22,7 +22,26 @@ def sqrt(number: int) -> int:
     Returns:
     int: Floored square root
     """
-    pass
+    assert number >= 0, "Negative roots are invalid"
+    if number == 0 or number == 1:
+        return number
+    est = number // 2
+    while not (est ** 2 >= number and (est-1) ** 2 < number):
+        adjust = est // 2 if est // 2 > 0 else 1
+        est = est + (adjust if est ** 2 <= number else -adjust)
+    return est - 1 if number - est**2 < 0 else est
+    
+    # if est*est > number:
+    #     est -= adjust 
+    # else:
+    #     est += adjust
+     
+    # root = 0
+    # est = number
+    # while est > 0:
+    #     root += 1
+    #     est -= 2 * root - 1
+    # return root-1 if est < 0 else root
 
 if __name__ == "__main__":
     # Test cases
@@ -31,3 +50,10 @@ if __name__ == "__main__":
     print("Pass" if 4 == sqrt(16) else "Fail")  # Expected Output: Pass
     print("Pass" if 1 == sqrt(1) else "Fail")   # Expected Output: Pass
     print("Pass" if 5 == sqrt(27) else "Fail")  # Expected Output: Pass
+    print("Pass" if 5 == sqrt(27) else "Fail")  # Expected Output: Pass
+    print("Pass" if 32 == sqrt(1024) else "Fail")  # Expected Output: Pass
+    try:
+        sqrt(-4)
+    except AssertionError as err:
+        assert repr(err) == "AssertionError('Negative roots are invalid')"
+        print("Pass assertion")
