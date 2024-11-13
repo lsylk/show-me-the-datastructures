@@ -1,5 +1,6 @@
 from helpers import load_map, Map
 from typing import Callable
+from student_code import shortest_path
 
 MAP_40_ANSWERS: list[tuple[int, int, list[int]]] = [
     (5, 34, [5, 16, 37, 12, 34]),
@@ -34,3 +35,6 @@ def test(shortest_path_function: Callable[[Map, int, int], list[int]]) -> None:
         print("All tests pass! Congratulations!")
     else:
         print("You passed", correct, "/", len(MAP_40_ANSWERS), "test cases")
+
+if __name__ == "__main__":
+    test(shortest_path)
